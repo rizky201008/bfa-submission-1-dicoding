@@ -2,11 +2,14 @@ package com.example.githubusersubmission1
 
 import android.app.SearchManager
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Menu
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.githubusersubmission1.adapter.UsersAdapter
@@ -20,6 +23,9 @@ import retrofit2.Response
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
+    val handler = Handler(Looper.getMainLooper()!!)
+    private var runnable: Runnable? = null
+    private val DEBOUNCE_DELAY = 500L // waktu tunda 0.5 detik
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -28,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.title = "Github User"
     }
 
-    fun searchUser(usernames:String) {
+    fun searchUser(usernames: String) {
         val recyclerView = binding.recyclerview1
         val progressBar = binding.progressBar
         progressBar.visibility = View.VISIBLE
@@ -38,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
         ApiConfig.getService().getSearchUsers(usernames)
-            .enqueue(object : Callback<ResponseUsersSearch> {
+            .enqueue(object : Callback<ResponseUsersSearch>, UsersAdapter.OnItemClickListener {
                 override fun onResponse(
                     call: Call<ResponseUsersSearch>,
                     response: Response<ResponseUsersSearch>
@@ -48,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                         val responseUsers = response.body()
                         val dataUsers = responseUsers?.items
                         val usersAdapter = UsersAdapter(dataUsers)
-
+                        usersAdapter.setOnItemClickListener(this)
                         recyclerView.apply {
                             layoutManager = LinearLayoutManager(this@MainActivity)
                             setHasFixedSize(true)
@@ -64,6 +70,12 @@ class MainActivity : AppCompatActivity() {
                         .show()
                 }
 
+                override fun onItemClick(name: String?, avatar: String?) {
+                    DetailActivity.login = name.toString()
+                    DetailActivity.avatar = avatar.toString()
+                    val intent = Intent(this@MainActivity, DetailActivity::class.java)
+                    startActivity(intent)
+                }
             })
     }
 
@@ -82,7 +94,10 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                searchUser(newText)
+                runnable?.let { handler.removeCallbacks(it) } // reset tunda waktu
+                runnable = Runnable { searchUser(newText) }.also {
+                    handler.postDelayed(it, DEBOUNCE_DELAY)
+                }
                 return false
             }
         })
