@@ -70,15 +70,18 @@ class DetailActivity : AppCompatActivity() {
         val usernameDetail = binding.tvNameDetail
         progressBar.visibility = View.VISIBLE
         ApiConfig.getService().getDetailUser(login).enqueue(object : Callback<ResponseDetailUser> {
-            override fun onResponse(call: Call<ResponseDetailUser>, response: Response<ResponseDetailUser>) {
+            override fun onResponse(
+                call: Call<ResponseDetailUser>,
+                response: Response<ResponseDetailUser>
+            ) {
                 progressBar.visibility = View.GONE
                 if (response.isSuccessful) {
                     val dataUsers = response.body()
                     FOLLOWING = dataUsers?.following.toString()
                     FOLLOWER = dataUsers?.followers.toString()
                     NAME = dataUsers?.name.toString()
-                    follower.text = getString(R.string.followers, FOLLOWER)
-                    following.text = getString(R.string.following, FOLLOWING)
+                    follower.text = FOLLOWER
+                    following.text = FOLLOWING
                     usernameDetail.text = NAME
                 }
             }
