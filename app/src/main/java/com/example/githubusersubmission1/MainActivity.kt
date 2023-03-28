@@ -17,9 +17,7 @@ import com.example.githubusersubmission1.adapter.UsersSearchAdapter
 import com.example.githubusersubmission1.data.ResponseUserLists
 import com.example.githubusersubmission1.data.ResponseUsersSearch
 import com.example.githubusersubmission1.databinding.ActivityMainBinding
-import com.example.githubusersubmission1.databinding.FragmentFollowersBinding
 import com.example.githubusersubmission1.epiay.ApiConfig
-import com.google.android.material.snackbar.Snackbar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
