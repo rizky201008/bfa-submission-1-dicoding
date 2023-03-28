@@ -11,7 +11,7 @@ import retrofit2.http.Query
 
 interface ApiService {
     companion object {
-        const val API_KEY = "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"
+        const val API_KEY = "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"
     }
     @GET("users")
     @Headers("Authorization: token $API_KEY")
