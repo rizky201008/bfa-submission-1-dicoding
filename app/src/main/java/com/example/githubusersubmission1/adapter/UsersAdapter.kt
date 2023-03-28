@@ -4,18 +4,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.githubusersubmission1.R
-import com.example.githubusersubmission1.data.ItemsItem
-import com.example.githubusersubmission1.data.ResponseUsersSearch
+import com.example.githubusersubmission1.data.ResponseUserLists
 import de.hdodenhof.circleimageview.CircleImageView
 
-class UsersAdapter(val dataUser: List<ItemsItem?>?) :
+class UsersAdapter(val dataUsers: ArrayList<ResponseUserLists>) :
     RecyclerView.Adapter<UsersAdapter.MyViewHolder>() {
-    private var listener: OnItemClickListener? = null
-    fun setOnItemClickListener(listener: OnItemClickListener) {
+    private var listener: UsersAdapter.OnItemClickListener? = null
+    fun setOnItemClickListener(listener: UsersAdapter.OnItemClickListener) {
         this.listener = listener
     }
 
@@ -31,28 +29,24 @@ class UsersAdapter(val dataUser: List<ItemsItem?>?) :
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.loginUsername.text = dataUser?.get(position)?.login
+        holder.loginUsername.text = dataUsers.get(position).login
 
         Glide.with(holder.imgAvatar)
-            .load(dataUser?.get(position)?.avatarUrl)
+            .load(dataUsers[position].avatarUrl)
             .error(R.drawable.ic_launcher_background)
             .into(holder.imgAvatar)
         holder.itemView.setOnClickListener {
-            val name = dataUser?.get(position)?.login
-            val avatar = dataUser?.get(position)?.avatarUrl
-            listener?.onItemClick(name,avatar)
+            val name = dataUsers[position].login
+            val avatar = dataUsers[position].avatarUrl
+            listener?.onItemClick(name, avatar)
         }
     }
 
     override fun getItemCount(): Int {
-        if (dataUser != null) {
-            return dataUser.size
-        }
-        return 0
+        return dataUsers.size
     }
 
     interface OnItemClickListener {
-        fun onItemClick(name: String?,avatar: String?)
+        fun onItemClick(name: String?, avatar: String?)
     }
-
 }

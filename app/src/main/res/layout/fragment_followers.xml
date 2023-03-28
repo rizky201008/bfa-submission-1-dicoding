@@ -4,24 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".FollowersFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview1"
+        android:id="@+id/recyclerview2"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
-        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/progressBar2"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/recyclerview1"
-        app:layout_constraintEnd_toEndOf="@id/recyclerview1"
-        app:layout_constraintStart_toStartOf="@id/recyclerview1"
-        app:layout_constraintTop_toTopOf="@id/recyclerview1" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

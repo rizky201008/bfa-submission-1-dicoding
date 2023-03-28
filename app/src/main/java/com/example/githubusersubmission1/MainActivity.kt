@@ -13,38 +13,87 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.githubusersubmission1.adapter.UsersAdapter
+import com.example.githubusersubmission1.adapter.UsersSearchAdapter
+import com.example.githubusersubmission1.data.ResponseUserLists
 import com.example.githubusersubmission1.data.ResponseUsersSearch
 import com.example.githubusersubmission1.databinding.ActivityMainBinding
+import com.example.githubusersubmission1.databinding.FragmentFollowersBinding
 import com.example.githubusersubmission1.epiay.ApiConfig
+import com.google.android.material.snackbar.Snackbar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+    private var _binding: ActivityMainBinding? = null
+    private val binding get() = _binding!!
 
     val handler = Handler(Looper.getMainLooper()!!)
     private var runnable: Runnable? = null
     private val DEBOUNCE_DELAY = 500L // waktu tunda 0.5 detik
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         supportActionBar?.title = "Github User"
+        showUsers()
+    }
+
+    private fun showUsers() {
+        val recyclerView = binding.recyclerview1
+        val progressBar = binding.progressBar
+        progressBar.visibility = View.VISIBLE
+        recyclerView.adapter = null
+        ApiConfig.getService().getUsers()
+            .enqueue(object : Callback<ArrayList<ResponseUserLists>>,
+                UsersAdapter.OnItemClickListener {
+                override fun onResponse(
+                    call: Call<ArrayList<ResponseUserLists>>,
+                    response: Response<ArrayList<ResponseUserLists>>
+                ) {
+                    progressBar.visibility = View.GONE
+                    if (response.isSuccessful) {
+                        val responseFollowings = response.body()
+                        val dataUsers = responseFollowings
+                        val usersAdapter = dataUsers?.let { UsersAdapter(it) }
+                        usersAdapter?.setOnItemClickListener(this)
+                        recyclerView.apply {
+                            layoutManager = LinearLayoutManager(this@MainActivity)
+                            setHasFixedSize(true)
+                            usersAdapter?.notifyDataSetChanged()
+                            adapter = usersAdapter
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<ArrayList<ResponseUserLists>>, t: Throwable) {
+                    Toast.makeText(this@MainActivity, t.localizedMessage, Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onItemClick(name: String?, avatar: String?) {
+                    DetailActivity.login = name.toString()
+                    DetailActivity.avatar = avatar.toString()
+                    val intent = Intent(this@MainActivity, DetailActivity::class.java)
+                    startActivity(intent)
+                }
+
+            })
     }
 
     fun searchUser(usernames: String) {
         val recyclerView = binding.recyclerview1
         val progressBar = binding.progressBar
         progressBar.visibility = View.VISIBLE
-        if (usernames.isNullOrEmpty()) {
+        if (usernames.isEmpty()) {
             recyclerView.adapter = null // kosongkan adapter jika usernames null atau kosong
             progressBar.visibility = View.GONE
+            showUsers()
             return
         }
         ApiConfig.getService().getSearchUsers(usernames)
-            .enqueue(object : Callback<ResponseUsersSearch>, UsersAdapter.OnItemClickListener {
+            .enqueue(object : Callback<ResponseUsersSearch>,
+                UsersSearchAdapter.OnItemClickListener {
                 override fun onResponse(
                     call: Call<ResponseUsersSearch>,
                     response: Response<ResponseUsersSearch>
@@ -53,13 +102,13 @@ class MainActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val responseUsers = response.body()
                         val dataUsers = responseUsers?.items
-                        val usersAdapter = UsersAdapter(dataUsers)
-                        usersAdapter.setOnItemClickListener(this)
+                        val usersSearchAdapter = UsersSearchAdapter(dataUsers)
+                        usersSearchAdapter.setOnItemClickListener(this)
                         recyclerView.apply {
                             layoutManager = LinearLayoutManager(this@MainActivity)
                             setHasFixedSize(true)
-                            usersAdapter.notifyDataSetChanged()
-                            adapter = usersAdapter
+                            usersSearchAdapter.notifyDataSetChanged()
+                            adapter = usersSearchAdapter
                         }
                     }
                 }

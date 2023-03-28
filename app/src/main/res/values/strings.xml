@@ -1,10 +1,13 @@
 <resources>
     <string name="app_name">Github User Submission1</string>
     <string name="hintSearch">rizky201008</string>
+    <string name="titleSearch">Search Now</string>
     <string name="penengah">|</string>
     <string name="title_activity_detail">DetailActivity</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
-    <string name="following">following</string>
-    <string name="follower">follower</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="followers">FOLLOWERS: %1$s</string>
+    <string name="following">FOLLOWING: %1$s</string>
 </resources>
